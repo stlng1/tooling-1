@@ -48,9 +48,7 @@ pipeline {
     post {
       always {
         sh 'docker logout'
-      // Clean after build
-        sh 'docker compose -f tooling.yml down'
-        sh 'docker rmi stlng/tooling-master:0.0.2'
+        sh 'docker system prune --volumes -a -f'
         }
       }
     }
