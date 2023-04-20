@@ -45,12 +45,12 @@ pipeline {
       }
     }
 
-  post {
-    always {
-      sh 'docker logout'
-    // Clean after build
-      sh 'docker compose -f tooling.yml down'
-      sh 'docker rmi stlng/tooling-master:0.0.2'
+    post {
+      always {
+        sh 'docker logout'
+      // Clean after build
+        sh 'docker compose -f tooling.yml down'
+        sh 'docker rmi stlng/tooling-master:0.0.2'
         }
       }
     }
