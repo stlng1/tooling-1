@@ -45,10 +45,15 @@ pipeline {
       }
     }
 
+    stage('Cleaning up') {
+      steps{
+        sh 'docker compose -f tooling.yml down'
+      }
+    } 
+
     post {
       always {
-        sh 'docker logout'
-        sh 'docker compose -f tooling.yml down'
+        // sh 'docker logout'
         }
       }
     }
