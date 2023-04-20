@@ -48,7 +48,7 @@ pipeline {
     post {
       always {
         sh 'docker logout'
-        sh 'docker system prune --volumes -a -f'
+        sh 'docker compose -f tooling.yml down'
         }
       }
     }
