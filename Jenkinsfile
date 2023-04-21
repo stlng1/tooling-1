@@ -36,13 +36,26 @@ pipeline {
       }
   }
 
-  stage('Docker Push') {
-    when { expression { response.status == 200 } }
-    steps {
-      sh 'docker push stlng/tooling-master:0.0.2'
-        }
-    }
-}
+      stage('Docker Push') {
+           when { expression { response.status == 200 } }
+           steps {
+               
+                   sh 'docker push stlng/tooling-master:0.0.2'
+               }
+           }
+      }
+
+
+
+
+
+//   stage('Docker Push') {
+//     when { expression { response.status == 200 } }
+//     steps {
+//       sh 'docker push stlng/tooling-master:0.0.2'
+//         }
+//     }
+// }
 
   //   stage('Test Stage: testing endpoint') {
   //     steps {
