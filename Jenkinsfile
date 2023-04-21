@@ -36,11 +36,11 @@ pipeline {
       }
   }
 
-    stage('Push docker image to docker hub registry') {
-      steps {
-        sh 'docker push stlng/tooling-master:0.0.1'
-      }
+  stage('Push docker image to docker hub registry') {
+    steps {
+      sh 'docker push stlng/tooling-master:0.0.1'
     }
+  }
 
 }
 
