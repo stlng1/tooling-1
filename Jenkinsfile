@@ -18,20 +18,26 @@ pipeline {
       steps {
         sh 'docker-compose -f tooling.yml  up -d'
 
-        script {
-          while (true) {
-            def response = httpRequest 'http://localhost:5000'
-            if (response.status == 200) {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
-                break 
-                }
-              }
+        def get = new URL('http://localhost:5000').openConnection();
+        def getRC = get.getResponseCode();
+        println(getRC);
+        if(getRC.equals(200)) {
+            println(get.getInputStream().getText()); 
+        }
+        // script {
+        //   while (true) {
+        //     def response = httpRequest 'http://localhost:5000'
+        //     if (response.status == 200) {
+        // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        //         }
+        //         break 
+        //         }
+        //       }
             }
           }
 
     stage('Push docker image to docker hub registry') {
-      when { expression { response.status == 200 } }
+      when { getRC.equals(200) }
       steps {
         sh 'docker push stlng/tooling-master:0.0.2'
       }
