@@ -40,7 +40,7 @@ pipeline {
            when { expression { response.status == 200 } }
            steps {
                
-                   sh 'docker push stlng/tooling-master:0.0.2'
+              sh 'docker push stlng/tooling-master:0.0.2'
                }
            }
       }
