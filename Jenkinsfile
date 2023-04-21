@@ -14,38 +14,67 @@ pipeline {
       }
     }
 
-    stage('Test Stage: testing endpoint') {
-      steps {
-        sh 'docker-compose -f tooling.yml  up -d'
-      }
-      }
-      
-    stage('Test Stage: testing endpoint2') {
-        steps {
-        script {
-          while (true) {
-            def response = httpRequest 'http://localhost:5000'
-            if (response.status == 200) {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
-                break 
-                }
-              }
-            }
-          }
 
-    stage('Push docker image to docker hub registry') {
-      when { getRC.equals(200) }
-      steps {
-        sh 'docker push stlng/tooling-master:0.0.2'
-      }
+  stage("Start the app") {
+    steps {
+        sh "docker-compose up -d"
     }
+}
 
-    stage('Cleaning up') {
-      steps{
-        sh 'docker compose -f tooling.yml down'
-        sh 'docker rmi tooling-master:0.0.2'
+  stage("Test endpoint") {
+      steps {
+          script {
+              while (true) {
+                  def response = httpRequest 'http://localhost:5000'
+                  if (response.status == 200) {
+  sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                      }
+                      break 
+                  }
+              }
+          }
       }
-    } 
-   }
   }
+  stage('Docker Push') {
+        when { expression { response.status == 200 } }
+        steps {
+        sh 'docker push stlng/tooling-master:0.0.2'
+            }
+        }
+  }
+
+  //   stage('Test Stage: testing endpoint') {
+  //     steps {
+  //       sh 'docker-compose -f tooling.yml  up -d'
+  //     }
+  //     }
+      
+  //   stage('Test Stage: testing endpoint2') {
+  //       steps {
+  //       script {
+  //         while (true) {
+  //           def response = httpRequest 'http://localhost:5000'
+  //           if (response.status == 200) {
+  //       sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+  //               }
+  //               break 
+  //               }
+  //             }
+  //           }
+  //         }
+
+  //   stage('Push docker image to docker hub registry') {
+  //     when { getRC.equals(200) }
+  //     steps {
+  //       sh 'docker push stlng/tooling-master:0.0.2'
+  //     }
+  //   }
+
+  //   stage('Cleaning up') {
+  //     steps{
+  //       sh 'docker compose -f tooling.yml down'
+  //       sh 'docker rmi tooling-master:0.0.2'
+  //     }
+  //   } 
+  //  }
+  // }
