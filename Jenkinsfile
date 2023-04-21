@@ -29,7 +29,7 @@ pipeline {
                 if (response.status == 200) {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                       }
-                      break 
+                      // break 
                   }
               }
           }
