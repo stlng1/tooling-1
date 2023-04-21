@@ -17,22 +17,20 @@ pipeline {
     stage('Test Stage: testing endpoint') {
       steps {
         sh 'docker-compose -f tooling.yml  up -d'
-
-        def get = new URL('http://localhost:5000').openConnection();
-        def getRC = get.getResponseCode();
-        println(getRC);
-        if(getRC.equals(200)) {
-            println(get.getInputStream().getText()); 
-        }
-        // script {
-        //   while (true) {
-        //     def response = httpRequest 'http://localhost:5000'
-        //     if (response.status == 200) {
-        // sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-        //         }
-        //         break 
-        //         }
-        //       }
+      }
+      }
+      
+    stage('Test Stage: testing endpoint2') {
+        steps {
+        script {
+          while (true) {
+            def response = httpRequest 'http://localhost:5000'
+            if (response.status == 200) {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                }
+                break 
+                }
+              }
             }
           }
 
