@@ -43,11 +43,5 @@ pipeline {
         sh 'docker rmi tooling-${env.BRANCH_NAME}:${env.BUILD_NUMBER}'
       }
     } 
-
-    post {
-      always {
-        sh 'docker logout'
-        }
-      }
-    }
+   }
   }
