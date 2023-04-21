@@ -22,12 +22,12 @@ pipeline {
 }
 
   stage("Test endpoint") {
-      steps {
-          script {
-              while (true) {
-                  def response = httpRequest 'http://localhost:5000'
-                  if (response.status == 200) {
-  sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+    steps {
+        script {
+            while (true) {
+                def response = httpRequest 'http://localhost:5000'
+                if (response.status == 200) {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                       }
                       break 
                   }
@@ -35,13 +35,14 @@ pipeline {
           }
       }
   }
+
   stage('Docker Push') {
-        when { expression { response.status == 200 } }
-        steps {
-        sh 'docker push stlng/tooling-master:0.0.2'
-            }
+    when { expression { response.status == 200 } }
+    steps {
+      sh 'docker push stlng/tooling-master:0.0.2'
         }
-  }
+    }
+}
 
   //   stage('Test Stage: testing endpoint') {
   //     steps {
