@@ -1,4 +1,4 @@
-pipeline {
+pipeline      {
   agent any
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
@@ -7,84 +7,56 @@ pipeline {
     DOCKERHUB_CREDENTIALS = credentials('dockerhub')
   }
 
-  stages {
-    stage('Build image for tooling-app') {
-      steps {
-        sh 'docker build -t stlng/tooling-master:0.0.2 .'
-      }
+    stages {
+        stage('Build image for tooling-app') {
+            steps {
+                sh 'docker build -t 'stlng/tooling-$env.BRANCH_NAME:$env.BUILD_NUMBER' .'
+            }
+        }
+
+        stage('Launch app') {
+            steps {
+                sh 'docker compose -f tooling.yml up -d'
+            }
+        }
+
+        stage('testing endpoint') {
+            steps {
+                httpRequest url:'http://localhost:5000',
+                validResponseCodes:'200'
+            }
+        }
+
+        stage('shutting down app') {
+            steps{
+                sh 'docker compose -f tooling.yml down'
+            }
+        }
     }
 
+        stage('login to dockerHub') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
 
-  stage("Start the app") {
-    steps {
-        sh "docker-compose up -d"
+        stage('pushing image to dockerHub') {
+            steps {
+                sh 'docker push 'stlng/tooling-$env.BRANCH_NAME:$env.BUILD_NUMBER''
+            }
+        }
+
+        stage('logout of dockerHub') {
+            steps {
+               sh 'docker logout'
+            }
+        }
+
+ /*** workspace clean up*/
+    post {
+        always     {
+                sh 'docker system prune'
+                cleanWs()
+        }
     }
 }
-
-  stage("Test endpoint") {
-    steps {
-        script {
-            while (true) {
-                def response = httpRequest 'http://localhost:5000'
-                if (response.status == 200) {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                      }
-                      // break 
-                  }
-              }
-          }
-      }
-  }
-
-  stage('Push docker image to docker hub registry') {
-    steps {
-      sh 'docker push stlng/tooling-master:0.0.1'
-    }
-  }
-
-}
-
-
-//   stage('Docker Push') {
-//     when { expression { response.status == 200 } }
-//     steps {
-//       sh 'docker push stlng/tooling-master:0.0.2'
-//         }
-//     }
-// }
-
-  //   stage('Test Stage: testing endpoint') {
-  //     steps {
-  //       sh 'docker-compose -f tooling.yml  up -d'
-  //     }
-  //     }
-      
-  //   stage('Test Stage: testing endpoint2') {
-  //       steps {
-  //       script {
-  //         while (true) {
-  //           def response = httpRequest 'http://localhost:5000'
-  //           if (response.status == 200) {
-  //       sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-  //               }
-  //               break 
-  //               }
-  //             }
-  //           }
-  //         }
-
-  //   stage('Push docker image to docker hub registry') {
-  //     when { getRC.equals(200) }
-  //     steps {
-  //       sh 'docker push stlng/tooling-master:0.0.2'
-  //     }
-  //   }
-
-  //   stage('Cleaning up') {
-  //     steps{
-  //       sh 'docker compose -f tooling.yml down'
-  //       sh 'docker rmi tooling-master:0.0.2'
-  //     }
-  //   } 
-  //  }
-  // }
