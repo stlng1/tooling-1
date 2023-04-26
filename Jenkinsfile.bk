@@ -68,6 +68,6 @@ pipeline {
         container('docker') {
           sh 'docker logout'
       }
-      }
     }
+  }
 }
