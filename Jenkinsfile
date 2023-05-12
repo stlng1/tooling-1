@@ -7,20 +7,15 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
     stages {
-        stage('Build image for php-todo-app') {
+        stage('Build image for tooling app') {
             steps {
                 script {
-                    sh ('docker build -t stlng/tooling-$env.BRANCH_NAME:$env.BUILD_NUMBER .')
+                    sh ('docker compose -f tooling.yml  up -d')
             }
         }
     }
         stage('Test image') {
             stages {
-                    stage('Launch app') {
-                        steps {
-                            sh 'docker compose -f tooling.yml up -d'
-                        }
-                    }
                     stage('testing endpoint') {
                         steps {
                             httpRequest url:'http://localhost:5000',
@@ -43,7 +38,7 @@ pipeline {
         }
         stage('Push docker image to docker hub registry') {
             steps {
-                sh ('docker push stlng/tooling-$env.BRANCH_NAME:$env.BUILD_NUMBER')
+                sh ('docker push stlng/tooling-${BRANCH_NAME}:${BUILD_NUMBER}')
             }
         }
     }       
@@ -51,7 +46,7 @@ pipeline {
         always {
             script {
                 sh 'docker logout',
-                sh 'docker system prune'
+                sh 'docker system prune -f -a'
                 cleanWs()
             }
         }
