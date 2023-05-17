@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:80"
     volumes:
-      - tooling_frontend:/var/www/html
+      - tooling_frontend:/var/www
     networks:
       - tooling_app_network
     links:
@@ -22,6 +22,10 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - tooling_app_network 
 volumes:
   tooling_frontend:
   db:
+networks:
+  tooling_app_network : {}
